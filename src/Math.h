@@ -1,7 +1,7 @@
-// File:  Math.h
-// Name:  Zhehang Ding
-// Email: zhehangd@usc.edu
-// Data:  Nov. 01, 2015
+// File:   Math.h
+// Author: Zhehang Ding
+// Email:  dingzhehang1993@gmail.com
+// Data:   Feb. 07, 2016
 
 #ifndef MATH_H_
 #define MATH_H_

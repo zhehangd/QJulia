@@ -1,0 +1,24 @@
+Hello, this is the first distribution of my QJulia program. The program is
+still in the very begining stage, but at least you already can use it to
+do something. This is program that draws "Quaternion Julia Fractals". If
+you have no idea what it is, please first google "Fractal", then "Julia Set",
+and at last "Quaternion Julia Fractal/Set".
+
+I wish I can develop a standalone program with no library dependency, but I
+am not powerful enough yet. It is quite inconvenient when using this program.
+First, you have to change all parameters inside the code, rather than type
+argument in the command line. Second, the output is raw data, not common bmp,
+png, or jpeg. If you have GIMP or Photoshop, you can open the image using them.
+
+I develop the program using gcc 4.9.2 in Ubuntu. If you are using Linux you
+can run [make] command to compile the code. Note that some C++11 features
+are used. Make sure your compiler supports it.
+
+There is a demo video in my exhibits. This is how it is produced. First I 
+modified my main() function, adding a for loop to generate all the frames. Then
+I use ImageMagic to convert them to .png format. Then go to ffmpeg, assemble
+these images to a video. I hope this can help you if you want to make your own
+outcomes.
+
+
+                                             Zhehang Ding

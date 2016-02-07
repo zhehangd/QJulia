@@ -1,7 +1,7 @@
-// File:  Vector3.cpp
-// Name:  Zhehang Ding
-// Email: zhehangd@usc.edu
-// Data:  Nov. 01, 2015
+// File:   Math.cpp
+// Author: Zhehang Ding
+// Email:  dingzhehang1993@gmail.com
+// Data:   Feb. 07, 2016
 
 #include <cmath>
 #include "Math.h"

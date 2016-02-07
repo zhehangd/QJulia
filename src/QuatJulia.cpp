@@ -1,3 +1,8 @@
+// File:   QuatJulia.cpp
+// Author: Zhehang Ding
+// Email:  dingzhehang1993@gmail.com
+// Data:   Feb. 07, 2016
+
 #include <cfloat>
 #include <cmath>
 #include <cstdlib>

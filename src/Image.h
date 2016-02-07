@@ -1,8 +1,7 @@
-// File:  IpImage.h
-// Name:  Zhehang Ding
-// USCID: 7543417727
-// Email: zhehangd@usc.edu
-// Data:  Nov. 29, 2015
+// File:   Image.h
+// Author: Zhehang Ding
+// Email:  dingzhehang1993@gmail.com
+// Data:   Feb. 07, 2016
 
 #ifndef IMAGE_H_
 #define IMAGE_H_

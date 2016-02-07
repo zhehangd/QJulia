@@ -1,5 +1,10 @@
-#ifndef QUAT_JULIA_H_
-#define QUAT_JULIA_H_
+// File:   QuatJulia.cpp
+// Author: Zhehang Ding
+// Email:  dingzhehang1993@gmail.com
+// Data:   Feb. 07, 2016
+
+#ifndef QUATJULIA_H_
+#define QUATJULIA_H_
 
 #include <vector>
 #include "Image.h"

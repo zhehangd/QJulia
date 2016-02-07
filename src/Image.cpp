@@ -1,8 +1,7 @@
-// File:  IpImage.cpp
-// Name:  Zhehang Ding
-// USCID: 7543417727
-// Email: zhehangd@usc.edu
-// Data:  Nov. 29, 2015
+// File:   Image.cpp
+// Author: Zhehang Ding
+// Email:  dingzhehang1993@gmail.com
+// Data:   Feb. 07, 2016
 
 // C++11 round() is used.
 #include <cmath>

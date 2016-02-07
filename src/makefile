@@ -1,12 +1,12 @@
 # File:  makefile
 # Name:  Zhehang Ding
 # Email: zhehangd@usc.edu
-# Data:  Feb. 08, 2016
+# Data:  Feb. 07, 2016
 
 
 CPP       = g++
 DEBUG    = -g
-CXXFLAGS =  -std=c++11 -O3 $(DEBUG)
+CXXFLAGS =  -std=c++11 -O3
 LXXFLAGS =  $(DEBUG)
 
 ALL   : QJulia

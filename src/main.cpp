@@ -1,43 +1,48 @@
-// File:  main.cpp
-// Name:  Zhehang Ding
-// USCID: 7543417727
-// Email: zhehangd@usc.edu
-// Data:  Nov. 29, 2015
+// File:   main.cpp
+// Author: Zhehang Ding
+// Email:  dingzhehang1993@gmail.com
+// Data:   Feb. 07, 2016
 
 #include <cassert>
 #include <ctime>
 
 #include <iostream>
+#include <sstream>
 #include <string>
+#include <iomanip>
 
 #include "Image.h"
 #include "QuatJulia.h"
 
 using namespace std;
 
+// This is still in the very begining.
+// Apologies for all the mess of code.
 
-// Arugment
-// -s [width height]   Image Width
-// -f [focus=0.7]   Focus
-// -t [thres=100]   Threshold
-// -p [preci=0.0001] Precision
-// -z [zmin zmax]   
-// -q [a b c d]
-// -v [h v]
-// -o  [canv]
-// -os [surf]
-// -on [normal]
-// -la [r g b]
-// -l0a [att]
-// -l0p
-// -l0v 
-// -l1                 Use l1
-// -l2                 Use l2
-// -l1/2apv
-// -i [config file]
-// -console            console mode
-// -h                  help
-int main(int argc,char **argv)
+Image draw(qSurfaceGeneratorParm &parm1,qLightFieldParm &parm2,qCameraParm &camp)
+{
+
+    //cout<<"Iteratively calculate the surface..."<<endl;
+    Image surf = qSurfaceGenerator(parm1,camp);
+    
+    //cout<<"Calculating normal vectors..."<<endl;
+    Image norm  = qComputeNormal(surf);
+    
+    //cout<<"Shading the surface..."<<endl;
+    Image canv = qLighting(surf,norm,parm2);
+    
+    //((surf + 1.0f)*128).convert(IMAGE_CHAR).write("output/Julia_surf.data");
+    //(norm*256).convert(IMAGE_CHAR).write("output/Julia_norm.data");
+    //(canv*256).convert(IMAGE_CHAR).write("output/Julia_canv.data");
+    
+    //cout<<"Complete."<<endl;
+    
+    return (canv*256).convert(IMAGE_CHAR);
+    
+}
+
+
+int main(int argc,const char **argv)
 {
     
     // Set shown float precision to 3.
@@ -48,40 +53,23 @@ int main(int argc,char **argv)
     
     // =========================
     
-    {      
-        //ostringstream ss;
-        //ss << "output/step_"<<std::setfill('0')<<std::setw(2)<<i<<".data";
+    {
         
-        //std::cout<<"#"<<i<<std::endl;
         qSurfaceGeneratorParm parm1;
-        parm1.width  = 1600;
-        parm1.height = 1600;
-        parm1.focus  = 1.2;
+        parm1.width  = 512;
+        parm1.height = 512;
+        parm1.focus  = 0.7;
         parm1.thres  = 100;
-        parm1.preci  = 0.0001;
-        parm1.zmin   = 0;
+        parm1.preci  = 0.000001;
+        parm1.zmin   = -1;
         parm1.zmax   = 5;
         parm1.qc     = Quaternion(-0.2,-0.8,0.0,0.0); // The classic one
+        //parm1.qc     = Quaternion(-0.3,0.5,-0.4,0.34);
         //parm1.qc     = Quaternion(0.3,0.2,0.6,0.5);
         
+
         qCameraParm camp;
-        camp.setup(180+50,20);
-        //camp.setup(Vector3(1,1,1),Vector3(0,0,0));
-        //camp.setup(Vector3(-0.3,0.4,1),Vector3(0,0.6,0)); // loop focus=2
-        //camp.setup(Vector3(-2,1,2),Vector3(-1.1,-0.5,0)); // head focus=5
-        
-        
-        cout<<"Iteratively calculate the surface..."<<endl;
-        
-        // Find surface of the Julia set.
-        Image surf = qSurfaceGenerator(parm1,camp);
-        
-        ((surf + 1.0f)*128).convert(IMAGE_CHAR).write("output/Julia_surf.data");
-        
-        cout<<"Calculating normal vectors..."<<endl;
-        
-        // Compute the normal of each pixel.
-        Image norm  = qComputeNormal(surf);
+        camp.setup(180+60,20);
         
         // Lighting.
         qLightParm light0;
@@ -106,17 +94,10 @@ int main(int argc,char **argv)
         parm2.lights.push_back(light0);
         parm2.lights.push_back(light1);
         parm2.lights.push_back(light2);  
-        
-        
-        cout<<"Shading the surface..."<<endl;
-        
-        Image canv = qLighting(surf,norm,parm2);
-        
-        cout<<"Complete."<<endl;
-        
-        
-        (norm*256).convert(IMAGE_CHAR).write("output/Julia_norm.data");
-        (canv*256).convert(IMAGE_CHAR).write("output/Julia_canv.data");
+
+
+        Image canvas = draw(parm1,parm2,camp);
+        canvas.write("output.data");
     }
     // =============================
     
