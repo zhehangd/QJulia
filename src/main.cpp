@@ -32,9 +32,9 @@ Image draw(qSurfaceGeneratorParm &parm1,qLightFieldParm &parm2,qCameraParm &camp
     cout<<"Shading the surface..."<<endl;
     Image canv = qLighting(surf,norm,parm2);
     
-    ((surf + 1.0f)*128).convert(IMAGE_CHAR).write("Julia_surf.data");
-    (norm*256).convert(IMAGE_CHAR).write("Julia_norm.data");
-    (canv*256).convert(IMAGE_CHAR).write("Julia_canv.data");
+    //((surf + 1.0f)*128).convert(IMAGE_CHAR).write("Julia_surf.data");
+    //(norm*256).convert(IMAGE_CHAR).write("Julia_norm.data");
+    //(canv*256).convert(IMAGE_CHAR).write("Julia_canv.data");
     
     //cout<<"Complete."<<endl;
     
@@ -45,7 +45,7 @@ Image draw(qSurfaceGeneratorParm &parm1,qLightFieldParm &parm2,qCameraParm &camp
 // -s size                 ~
 // -f fov                  ~
 // -d div
-// -t threshold
+// -t threshold            ~
 // -p precision
 // -z "zmin zmax"
 // -q "a i j k"            ~
@@ -53,7 +53,7 @@ Image draw(qSurfaceGeneratorParm &parm1,qLightFieldParm &parm2,qCameraParm &camp
 // -C "ex ey ez tx ty tz"  ~
 // -l a
 // -l 0/1/2a/d/pr,g,b
-// -o filename
+// -o filename             ~
 int main(int argc,const char **argv)
 {
     
@@ -70,37 +70,37 @@ int main(int argc,const char **argv)
         
         // Param - Rendering
         qSurfaceGeneratorParm parm1;
-        parm1.width  = 4*512;
-        parm1.height = 4*512;
+        parm1.width  = 1024;
+        parm1.height = 1024;
         parm1.fov    = 0.7;
         parm1.div    = 100;
-        parm1.thres  = 16;
+        parm1.thres  = 12;
         parm1.preci  = 0.0001;
         parm1.zmin   = 0;
         parm1.zmax   = 5;
-        parm1.qc     = Quaternion(-0.2,-0.8,0.0,0.0);
+        parm1.qc     = Quaternion(-0.2,0.8,0.0,0.0);
         
 
         // Parm - Camera
         qCameraParm camp;
-        camp.setup(60+180,30);
+        camp.setup(60,30);
         //camp.setup(Vector3(-1.2555,0.342,0.5),Vector3(-1.2555,0.342,0));
         
         
         // Parm - Lighting
-        qLightParm light0;
+        qLightParm light0; // Red
         light0.att      = 5;
         light0.ambient  = Vector3(0,0.2,0.2);
         light0.diffuse  = Vector3(1,0.4,0.2)*5;
-        light0.position = Vector3(-0.8,0.1,0.1);
+        light0.position = Vector3(0.8,0.1,-0.1);
         
-        qLightParm light1;
+        qLightParm light1; // Green
         light1.att      = 5;
         light1.ambient  = Vector3(0,0,0);
         light1.diffuse  = Vector3(0.2,1,0.3)*3;
-        light1.position = Vector3(1,1,0.2);
+        light1.position = Vector3(-1,1,-0.2);
         
-        qLightParm light2;
+        qLightParm light2; // Blue
         light2.att      = 5;
         light2.ambient  = Vector3(0,0,0);
         light2.diffuse  = Vector3(0,0.4,1)*3;
@@ -111,6 +111,8 @@ int main(int argc,const char **argv)
         parm2.lights.push_back(light1);
         parm2.lights.push_back(light2);  
         
+        // Output filename
+        string filename = "Julia.data";
         
         
         
@@ -124,7 +126,7 @@ int main(int argc,const char **argv)
         parser.add('p',true); parser.add('z',true);
         parser.add('q',true); parser.add('c',true);
         parser.add('l',true); parser.add('o',true);
-        parser.add('C',true);
+        parser.add('C',true); parser.add('h',true);
         // Parse the arguments.
         parser.parse(argc,argv);
         
@@ -148,7 +150,11 @@ int main(int argc,const char **argv)
                 case 'C':{float f[3],t[3];
                     ss>>f[0]>>f[1]>>f[2]>>t[0]>>t[1]>>t[2];
                     camp.setup(Vector3(f),Vector3(t));break;}
-                     
+                case 't':
+                    ss>>parm1.thres;break;
+                case 'o':
+                    ss>>filename;break;
+                case 'h': cout<<"sfqcCtoh\n"<<endl; exit(0); break;
             }
             good = good && !ss.fail();
             if(good==false)
@@ -159,16 +165,21 @@ int main(int argc,const char **argv)
         
         }
         
-        std::cout<<parm1.width<<" - "<<parm1.height<<endl;
-        std::cout<<parm1.qc.a<<" "<<parm1.qc.i<<" "<<parm1.qc.j<<" "<<parm1.qc.k<<endl;
+        // Show all parameters
         
-        
-        
-        
-
+        cout<<"size:       "<<parm1.width<<" "<<parm1.height<<"\n";
+        cout<<"fov:        "<<parm1.fov<<"\n";
+        cout<<"div:        "<<parm1.div<<"\n";
+        cout<<"thres:      "<<parm1.thres<<"\n";
+        cout<<"preci:      "<<parm1.preci<<"\n";
+        cout<<"zmin/max:   "<<parm1.zmin<<" "<<parm1.zmax<<"\n";
+        cout<<"quaternion: "<<parm1.qc.a<<" "<<parm1.qc.i<<" "<<parm1.qc.j<<" "<<parm1.qc.k<<"\n";
+        cout<<"camera:     "<<"N/A"<<"\n";
+        cout<<"light:      "<<"N/A"<<"\n";
+        cout<<"output:     "<<filename<<"\n";
 
         Image canvas = draw(parm1,parm2,camp);
-        //canvas.write("output.data");
+        canvas.write(filename.c_str());
     }
     // =============================
     

@@ -1,7 +1,7 @@
 // File:   QuatJulia.cpp
 // Author: Zhehang Ding
 // Email:  dingzhehang1993@gmail.com
-// Data:   Feb. 08, 2016
+// Data:   Feb. 07, 2016
 
 #include <cfloat>
 #include <cmath>
@@ -34,15 +34,8 @@ void qCameraParm::setup(Vector3 at,Vector3 to)
 
 // Iteration of q=q^2+c formula
 // Return whether it converges.
-// If the thres is high, we can get a detailed map, but
-// since the fractal is too complicated, you will never
-// get a smooth surface. In other word, we do not have
-// enough sampling rate.
-bool quatIteration(Quaternion q,Quaternion c,int thres=16)
+bool quatIteration(Quaternion q,Quaternion c,int thres)
 {
-    // If add the following lines, the Mandelbrot set will be drawn. ^_^
-    // c = q;
-    // q = Quaternion();
     for(int i=0;i<thres;i++)
     {
         q = q*q + c;
@@ -67,20 +60,19 @@ Vector3 quatSearch(Vector3 vs,Vector3 ve,Quaternion c,int div,float prec,int thr
     }
     if(i==div)
         return Vector3(INFINITY,INFINITY,INFINITY);
-    // Refine the depth precision.
+    // Refine
     Vector3 ub = vs + vd*(float)i/(div-1);
     Vector3 lb = vs + vd*(float)(i-1)/(div-1);
     while((ub-lb).norm1()>prec)
     {
         Vector3 v = (ub+lb)/2;
-        if(quatIteration(Quaternion(v[0],v[1],v[2],0),c))
+        if(quatIteration(Quaternion(v[0],v[1],v[2],0),c,thres))
             ub = v;
         else
             lb = v;
     }
     return (ub+lb)/2;
 }
-
 
 Image qSurfaceGenerator(const qSurfaceGeneratorParm &parm,const qCameraParm &camp)
 {
@@ -89,7 +81,7 @@ Image qSurfaceGenerator(const qSurfaceGeneratorParm &parm,const qCameraParm &cam
     const int   h  = parm.height, hh = h/2;
     const float rf = 1.0f / parm.fov;
     
-    Image  image(w,h,3,IMAGE_FLOAT);
+    Image  image(w,h,3,IMAGE_FLOAT); // The background has inifity value.
     
     // Set up the view transformation.
     Camera camera;
