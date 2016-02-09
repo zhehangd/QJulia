@@ -1,7 +1,7 @@
 // File:   QuatJulia.cpp
 // Author: Zhehang Ding
 // Email:  dingzhehang1993@gmail.com
-// Data:   Feb. 07, 2016
+// Data:   Feb. 08, 2016
 
 #include <cfloat>
 #include <cmath>
@@ -34,18 +34,25 @@ void qCameraParm::setup(Vector3 at,Vector3 to)
 
 // Iteration of q=q^2+c formula
 // Return whether it converges.
-bool quatIteration(Quaternion q,Quaternion c,int thres=14)
+// If the thres is high, we can get a detailed map, but
+// since the fractal is too complicated, you will never
+// get a smooth surface. In other word, we do not have
+// enough sampling rate.
+bool quatIteration(Quaternion q,Quaternion c,int thres=16)
 {
+    // If add the following lines, the Mandelbrot set will be drawn. ^_^
+    // c = q;
+    // q = Quaternion();
     for(int i=0;i<thres;i++)
     {
         q = q*q + c;
-        if(q.norm1()>1000.0f)
+        if(q.norm1()>10.0f)
             return false;
     }
     return true;
 }
 
-Vector3 quatSearch(Vector3 vs,Vector3 ve,Quaternion c,int div,float prec=0.002)
+Vector3 quatSearch(Vector3 vs,Vector3 ve,Quaternion c,int div,float prec,int thres)
 {
     // Forward step by step, unitl find the first point inside the fractal.
     Vector3 vd = ve - vs;
@@ -55,12 +62,12 @@ Vector3 quatSearch(Vector3 vs,Vector3 ve,Quaternion c,int div,float prec=0.002)
         // Interpolate the coordinate from vs and ve
         Vector3 v = vs + vd*(float)i/(div-1);
         // Construct the quaternion and find if inside the fractal.
-        if(quatIteration(Quaternion(v[0],v[1],v[2],0),c))
+        if(quatIteration(Quaternion(v[0],v[1],v[2],0),c,thres))
             break;
     }
     if(i==div)
         return Vector3(INFINITY,INFINITY,INFINITY);
-    // Refine
+    // Refine the depth precision.
     Vector3 ub = vs + vd*(float)i/(div-1);
     Vector3 lb = vs + vd*(float)(i-1)/(div-1);
     while((ub-lb).norm1()>prec)
@@ -74,14 +81,15 @@ Vector3 quatSearch(Vector3 vs,Vector3 ve,Quaternion c,int div,float prec=0.002)
     return (ub+lb)/2;
 }
 
+
 Image qSurfaceGenerator(const qSurfaceGeneratorParm &parm,const qCameraParm &camp)
 {
     // Pre-compute parameters.
     const int   w  = parm.width,  hw = w/2;
     const int   h  = parm.height, hh = h/2;
-    const float rf = 1.0f / parm.focus;
+    const float rf = 1.0f / parm.fov;
     
-    Image  image(w,h,3,IMAGE_FLOAT); // The background has inifity value.
+    Image  image(w,h,3,IMAGE_FLOAT);
     
     // Set up the view transformation.
     Camera camera;
@@ -101,7 +109,7 @@ Image qSurfaceGenerator(const qSurfaceGeneratorParm &parm,const qCameraParm &cam
         Vector3 vs = camera.projectInv(Vector3(x,y,-parm.zmin)).v3();
         Vector3 ve = camera.projectInv(Vector3(x,y,-parm.zmax)).v3();
         // Run search algorithm to find the first surface point.
-        Vector3 v  = quatSearch(vs,ve,parm.qc,parm.thres,parm.preci).v;
+        Vector3 v  = quatSearch(vs,ve,parm.qc,parm.div,parm.preci,parm.thres).v;
         // Write to the buffer.
         scan.setPixel(v.v);
         

@@ -1,7 +1,7 @@
 // File:   QuatJulia.cpp
 // Author: Zhehang Ding
 // Email:  dingzhehang1993@gmail.com
-// Data:   Feb. 07, 2016
+// Data:   Feb. 08, 2016
 
 #ifndef QUATJULIA_H_
 #define QUATJULIA_H_
@@ -24,9 +24,10 @@ struct qSurfaceGeneratorParm
     int width;
     int height;
     // Camera information
-    float focus;
+    float fov;
     // Fractal information
     int   thres;
+    int   div;
     float preci;
     //
     float zmin;

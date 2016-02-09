@@ -1,7 +1,7 @@
 # File:  makefile
 # Name:  Zhehang Ding
-# Email: zhehangd@usc.edu
-# Data:  Feb. 07, 2016
+# Email: dingzhehang1993@gmail.com
+# Data:  Feb. 08, 2016
 
 
 CPP       = g++
@@ -11,11 +11,13 @@ LXXFLAGS =  $(DEBUG)
 
 ALL   : QJulia
 
-QJulia  : Image.o Math.o main.o QuatJulia.o
-	$(CPP) -o QJulia  Image.o Math.o main.o QuatJulia.o
+QJulia  : Image.o Math.o main.o Parser.o QuatJulia.o
+	$(CPP) -o QJulia  Image.o Math.o main.o Parser.o QuatJulia.o
 
-main.o :   Image.h Math.h main.cpp QuatJulia.o
+main.o :   Image.h Math.h Parser.h main.cpp QuatJulia.h
 QuatJulia.o: Image.h Math.h QuatJulia.cpp
+
+
 
 clean:
 	rm *.o *~ QJulia
