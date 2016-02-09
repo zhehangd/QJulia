@@ -10,7 +10,7 @@ First, you have to change all parameters inside the code, rather than type
 argument in the command line. Second, the output is raw data, not common bmp,
 png, or jpeg. If you have GIMP or Photoshop, you can open the image using them.
 ------------------------------------
-Some of parameters have been avaliable via the command line. 2016.02.08
+Some of parameters have been avaliable via the command line.2016.02.08
 
 I develop the program using gcc 4.9.2 in Ubuntu. If you are using Linux you
 can run [make] command to compile the code. Note that some C++11 features
