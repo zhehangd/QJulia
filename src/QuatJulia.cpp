@@ -116,12 +116,11 @@ Image qSurfaceGenerator(const qSurfaceGeneratorParm &parm,const qCameraParm &cam
     return image;
 }
 
-
+// This function compute normal vectors from the surface map.
 Image qComputeNormal(Image surf)
 {
     // New image.
     Image norm; norm.emptyFrom(surf);
-    norm = norm + 0.314f;
     // Find the normal vecotrs.
     ROIScanner ss(surf,0,0,surf.width-1,surf.height-1);
     ROIScanner sd(norm,0,0,norm.width-1,norm.height-1);

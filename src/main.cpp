@@ -44,7 +44,7 @@ Image draw(qSurfaceGeneratorParm &parm1,qLightFieldParm &parm2,qCameraParm &camp
 
 // -s size                 ~
 // -f fov                  ~
-// -d div
+// -d div                  ~
 // -t threshold            ~
 // -p precision
 // -z "zmin zmax"
@@ -126,7 +126,7 @@ int main(int argc,const char **argv)
         parser.add('p',true); parser.add('z',true);
         parser.add('q',true); parser.add('c',true);
         parser.add('l',true); parser.add('o',true);
-        parser.add('C',true); parser.add('h',true);
+        parser.add('C',true); parser.add('h',false);
         // Parse the arguments.
         parser.parse(argc,argv);
         
@@ -152,8 +152,22 @@ int main(int argc,const char **argv)
                     camp.setup(Vector3(f),Vector3(t));break;}
                 case 't':
                     ss>>parm1.thres;break;
+                case 'd':
+                    ss>>parm1.div;break;
                 case 'o':
                     ss>>filename;break;
+                case 'l':
+                {
+                    int id; char t; float r,g,b;
+                    ss>>id>>t>>r>>g>>b;
+                    assert(id<3);
+                    switch(t){
+                    case 'a': parm2.lights[id].ambient  = Vector3(r,g,b);break;
+                    case 'd': parm2.lights[id].diffuse  = Vector3(r,g,b);break;
+                    case 'p': parm2.lights[id].position = Vector3(r,g,b);break;
+                    default:  assert(0);break;
+                    }break;
+                }
                 case 'h': cout<<"sfqcCtoh\n"<<endl; exit(0); break;
             }
             good = good && !ss.fail();
