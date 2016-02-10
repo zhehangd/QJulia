@@ -144,7 +144,7 @@ void Camera::setupInt(float focus,float zNear,float zFar)
     pInv[3][3]=1;*/
 }
 
-Vector4 matrixMult4x4(float m[4][4],const Vector4 &v)
+Vector4 matrixMult4x4(const float m[4][4],const Vector4 &v)
 {
     Vector4 out;
     out[0] = v[0]*m[0][0] + v[1]*m[0][1] + v[2]*m[0][2] + v[3]*m[0][3];
@@ -154,12 +154,12 @@ Vector4 matrixMult4x4(float m[4][4],const Vector4 &v)
     return out;
 }
 
-Vector4 Camera::project(Vector4 v)
+Vector4 Camera::project(Vector4 v)const
 {
     return matrixMult4x4(m,v);
 }
 
-Vector4 Camera::projectInv(Vector4 v)
+Vector4 Camera::projectInv(Vector4 v)const
 {
     return matrixMult4x4(mInv,v);
 }

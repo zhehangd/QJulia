@@ -33,26 +33,38 @@ int quatIteration(Quaternion q,Quaternion c,int thres)
     return 1;
 }
 
-Vector3 quatSearch(Vector3 vs,Vector3 ve,Quaternion c,int div,float prec,int thres)
+// division:    How many steps it takes to go through the searching distance.
+// precision:   The localization accuracy after finding a rough estimation.
+// threshold:   How many iteration to take to decide converence.
+Vector3 quatSearch(float x,float y,const Camera &cam,Quaternion c,int div,float prec,int thres)
 {
-    // Forward step by step, unitl find the first point inside the fractal.
-    Vector3 vd = ve - vs;
     int i;
+    // Search the region.
+    Vector3 v=cam.projectInv(Vector3(x,y,-cam.zn)).v3();
+    Vector3 p=v;
     for(i=0;i<div;i++)
     {
-        // Interpolate the coordinate from vs and ve
-        Vector3 v = vs + vd*(float)i/(div-1);
+        float   d = cam.zn+(cam.zf-cam.zn)*(float)i/(div-1);
+        float cz = (-d);
+        float cx = -x*cz;
+        float cy = -y*cz;
+        // cx=x;cy=y;cz=-d; // <- Use this to switch back to Orthogonal Proj.
+        v = Vector3(cx,cy,cz);
+        v = cam.projectInv(v).v3();
         // Construct the quaternion and find if inside the fractal.
         if(quatIteration(Quaternion(v[0],v[1],v[2],0),c,thres)>0)
             break;
+        p = v;
     }
-    if(i==div)
+    
+    if(i==div) // Comes to end.
         return Vector3(INFINITY,INFINITY,INFINITY);
-    // Refine
-    Vector3 ub = vs + vd*(float)i/(div-1);
-    Vector3 lb = vs + vd*(float)(i-1)/(div-1);
+    // Refine the result. (localization)
+    Vector3 ub = v;
+    Vector3 lb = p;
     while((ub-lb).norm1()>prec)
     {
+        //std::cout<<(ub-lb).norm1()<<" "<<std::flush;
         Vector3 v = (ub+lb)/2;
         if(quatIteration(Quaternion(v[0],v[1],v[2],0),c,thres)>0)
             ub = v;
@@ -64,15 +76,16 @@ Vector3 quatSearch(Vector3 vs,Vector3 ve,Quaternion c,int div,float prec,int thr
 
 Image qSurfaceGenerator(const qSurfaceGeneratorParm &parm,const Camera &cam)
 {
+    int div  = parm.div;
+    int thres = parm.thres;
+    float prec  = parm.preci;
+    Quaternion qc = parm.qc;
+
     // Pre-compute parameters.
     const int   w  = parm.width,  hw = w/2;
     const int   h  = parm.height, hh = h/2;
     const float rf = 1.0f / cam.f;
-    
     Image  image(w,h,3,IMAGE_FLOAT); // The background has inifity value.
-    
-    // Set up the view transformation.
-    Camera camera = cam;
     // Progress indicator.
     int progress = 10;
     // Scan the image
@@ -83,12 +96,8 @@ Image qSurfaceGenerator(const qSurfaceGeneratorParm &parm,const Camera &cam)
         int c = scan.currentCol();
         float x = rf*( c-hw)/hh; // to keep ratio constant, both divided by h/2.
         float y = rf*(-r+hh)/hh;
-        // Construct start and end positions.
-        // Note that in the camera coordinate system, z-axis points backward.
-        Vector3 vs = camera.projectInv(Vector3(x,y,-cam.zn)).v3();
-        Vector3 ve = camera.projectInv(Vector3(x,y,-cam.zf)).v3();
         // Run search algorithm to find the first surface point.
-        Vector3 v  = quatSearch(vs,ve,parm.qc,parm.div,parm.preci,parm.thres).v;
+        Vector3 v  = quatSearch(x,y,cam,qc,div,prec,thres).v;
         // Write to the buffer.
         scan.setPixel(v.v);
         

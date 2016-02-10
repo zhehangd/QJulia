@@ -243,8 +243,8 @@ class Camera
     void setupExt(float h,float v,float r);
     void setupInt(float focus,float zNear,float zFar);
     
-    Vector4 project(Vector4 v);
-    Vector4 projectInv(Vector4 v);
+    Vector4 project(Vector4 v)const;
+    Vector4 projectInv(Vector4 v)const;
     
     // Focus.
     float f;
