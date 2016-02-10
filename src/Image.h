@@ -1,7 +1,7 @@
 // File:   Image.h
 // Author: Zhehang Ding
 // Email:  dingzhehang1993@gmail.com
-// Data:   Feb. 07, 2016
+// Data:   Feb. 09, 2016
 
 #ifndef IMAGE_H_
 #define IMAGE_H_
@@ -93,19 +93,9 @@ public:
     
     // ====================== Display Method ======================
 
-    // show() is used for debug. It shows pixel values of a region of the image
-    // on the terminal.
-    //void show(int r,int c,int w,int h,int ch)const;
+
 
     // ====================== Variables ======================
-    /*
-     * Though the best way is putting these read-only variables in
-     * private domain, and use getXXX() methods to access their value.
-     * However, it makes the code ugly and massive, which seriously
-     * (at least for me) degrades the readability. So I decide to put
-     * it in public group, and it is programmers who take charge of
-     * keeping these values unmodified by accident.
-     */
 
     // ---------------------- Properties of an image -------------------------
     
@@ -140,6 +130,9 @@ public:
     unsigned int mSize;
     // element length.
     unsigned int eLen;
+    // Same as dx,dy but measured by byte.
+    unsigned int c_dx;
+    unsigned int c_dy;
 
 private:
 
@@ -177,7 +170,7 @@ public:
     T* ptr(unsigned int i)const{return (T*)cptr+i;}
     
     // Write value to current pixel.
-    void setPixel(const void* v){for(int i=0;i<dx;i++)cptr[i]=((char*)v)[i];}
+    void setPixel(const void* v){for(int i=0;i<c_dx;i++)cptr[i]=((char*)v)[i];}
     
     // Get the value of the current pixel.
     template <class T>
@@ -216,8 +209,8 @@ private:
     int regR,regC,regW,regH;
     // Row and column counters.
     int cntR,cntC;
-    // dx,dy. Copied from the image.
-    int dx,dy;
+    // c_dx,c_dy. Copied from the image.
+    int c_dx,c_dy;
 };
 
 

@@ -46,13 +46,13 @@ Image draw(qSurfaceGeneratorParm &parm1,qLightFieldParm &parm2,qCameraParm &camp
 // -f fov                  ~
 // -d div                  ~
 // -t threshold            ~
-// -p precision
-// -z "zmin zmax"
+// -p precision            ~
+// -z "zmin zmax"          ~
 // -q "a i j k"            ~
 // -c "h v"                ~
 // -C "ex ey ez tx ty tz"  ~
 // -l a
-// -l 0/1/2a/d/pr,g,b
+// -l 0/1/2a/d/pr,g,b      ~
 // -o filename             ~
 int main(int argc,const char **argv)
 {
@@ -83,7 +83,7 @@ int main(int argc,const char **argv)
 
         // Parm - Camera
         qCameraParm camp;
-        camp.setup(60,30);
+        camp.setup(60,30,1);
         //camp.setup(Vector3(-1.2555,0.342,0.5),Vector3(-1.2555,0.342,0));
         
         
@@ -145,8 +145,8 @@ int main(int argc,const char **argv)
                     ss>>parm1.fov;break;
                 case 'q':
                     ss>>parm1.qc.a>>parm1.qc.i>>parm1.qc.j>>parm1.qc.k;break;
-                case 'c':{ float h=0,v=0;
-                    ss>>h>>v; camp.setup(h,v);break;}
+                case 'c':{ float h=0,v=0,r=1;
+                    ss>>h>>v>>r; camp.setup(h,v,r);break;}
                 case 'C':{float f[3],t[3];
                     ss>>f[0]>>f[1]>>f[2]>>t[0]>>t[1]>>t[2];
                     camp.setup(Vector3(f),Vector3(t));break;}
@@ -154,6 +154,10 @@ int main(int argc,const char **argv)
                     ss>>parm1.thres;break;
                 case 'd':
                     ss>>parm1.div;break;
+                case 'p':
+                    ss>>parm1.preci;break;
+                case 'z':
+                    ss>>parm1.zmin>>parm1.zmax;break;
                 case 'o':
                     ss>>filename;break;
                 case 'l':

@@ -12,7 +12,7 @@
 
 struct qCameraParm
 {
-    void setup(float h,float v);
+    void setup(float h,float v,float r=1.0f);
     void setup(Vector3 at,Vector3 to);
     Vector3 pos;
     Vector3 dir;

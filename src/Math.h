@@ -20,8 +20,8 @@ public:
     
     // return Euclidean length.
     float norm(void)const{return norm2();}
-    float norm1(void)const;
-    float norm2(void)const;
+    float norm1(void)const; // The length
+    float norm2(void)const; // The square of the length.
     
     // return the summation of the elements.
     float sum(void);
@@ -246,9 +246,11 @@ class Camera
     // Transform matrix (row priority).
     // m:    world  coordinates to camera coordinates.
     // mInv: camera coordinates to world  coordinates.
+    // p:    perspective transform. (not implemented yet.)
+    // pInv: inverse perspective transform.
     float m[4][4];
     float mInv[4][4];
-    
+    float pInv[4][4];
 };
 
 

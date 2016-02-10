@@ -107,11 +107,28 @@ void Camera::setupExt(Vector3 s,Vector3 d,Vector3 u)
 
 void Camera::setupInt(float f,float aspect,float nz,float fz)
 {
-    // Nothing.
+    // Perspective
+    /*
+    for(int i=0;i<16;i++)
+        ((float*)p)[i] = 0.0f;
+    p[0][0] = p[1][1] = f;
+    p[2][2] = -(fz+nz)/(fz-nz);
+    p[2][3] = -2*nz/(fz-nz);
+    m[3][3] = -1;
+    
+    // Inverse.
+    for(int i=0;i<16;i++)
+        ((float*)pInv)[i] = 0.0f;
+    pInv[0][0] = pInv[1][1] = 1.0f/f;
+    
+    pInv[0][0]=1/f; pInv[0][1]=y[0]; pInv[0][2]=z[0]; pInv[0][3]=s[0];
+    pInv[1][0]=0; pInv[1][1]=y[1]; pInv[1][2]=z[1]; pInv[1][3]=s[1];
+    pInv[2][0]=x[2]; pInv[2][1]=y[2]; pInv[2][2]=z[2]; pInv[2][3]=s[2];
+    pInv[3][0]=pInv[3][1]=pInv[3][2]=0;
+    pInv[3][3]=1;*/
 }
 
-
-Vector4 Camera::project(Vector4 v)
+Vector4 matrixMult4x4(float m[4][4],const Vector4 &v)
 {
     Vector4 out;
     out[0] = v[0]*m[0][0] + v[1]*m[0][1] + v[2]*m[0][2] + v[3]*m[0][3];
@@ -121,12 +138,14 @@ Vector4 Camera::project(Vector4 v)
     return out;
 }
 
+Vector4 Camera::project(Vector4 v)
+{
+    return matrixMult4x4(m,v);
+}
+
 Vector4 Camera::projectInv(Vector4 v)
 {
-    Vector4 out;
-    out[0] = v[0]*mInv[0][0]+v[1]*mInv[0][1]+v[2]*mInv[0][2]+v[3]*mInv[0][3];
-    out[1] = v[0]*mInv[1][0]+v[1]*mInv[1][1]+v[2]*mInv[1][2]+v[3]*mInv[1][3];
-    out[2] = v[0]*mInv[2][0]+v[1]*mInv[2][1]+v[2]*mInv[2][2]+v[3]*mInv[2][3];
-    out[3] = v[0]*mInv[3][0]+v[1]*mInv[3][1]+v[2]*mInv[3][2]+v[3]*mInv[3][3];
-    return out;
+    return matrixMult4x4(mInv,v);
 }
+
+

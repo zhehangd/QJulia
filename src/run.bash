@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Variables
-rsize="800x600"
+rsize="600x600"
 filename=Julia.data
 
 # Default Lighting Environment
@@ -21,8 +21,8 @@ filename=Julia.data
 
 
 # QJulia
-./QJulia -q "-0.2 0.8 0.0 0.0" -c "30 30" -f 0.7 \
-         -t 12 -d 100 -o $filename -s "${rsize/x/ }"
+./QJulia -q "-0.2 0.8 0.0 0.0" -c "60 30 1" -f 0.7 \
+         -t 12 -d 100 -z "0.1 8" -o $filename -s "${rsize/x/ }"
 # ImageMagick
 convert -size $rsize -depth 8 \
           rgb:$filename $(echo $filename | cut -f 1 -d '.').png

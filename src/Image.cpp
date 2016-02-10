@@ -27,9 +27,10 @@ void Image::create(unsigned int w,unsigned int h,unsigned int ch,int t)
             eLen = sizeof(float);
         else
             eLen = sizeof(char);
-    
-    dx = channel*eLen;
+    dx = channel;
     dy = dx*width;
+    c_dx = dx * eLen;
+    c_dy = dy * eLen;
     size = width*height;
     numel = size*channel;
     mSize = numel*eLen;
@@ -55,10 +56,11 @@ void Image::allocate(unsigned int length)
 void Image::clear(void)
 {
     width = height = 0;
-    type = channel = 0;
-    eLen = mSize = 0;
-    dx = dy = 0;
-    size = numel = 0;
+    type  = channel = 0;
+    eLen  = mSize = 0;
+    dx    = dy = 0;
+    c_dx  = c_dy = 0;
+    size  = numel = 0;
     release();
 }
 
@@ -104,6 +106,8 @@ void Image::assign(Image& dst)const
     dst.channel   = channel;
     dst.dx        = dx;
     dst.dy        = dy;
+    dst.c_dx      = c_dx;
+    dst.c_dy      = c_dy;
     dst.type      = type;
     dst.eLen      = eLen;
     dst.mSize     = mSize;
@@ -126,7 +130,7 @@ Image Image::clone(void)const
 void* Image::getPixelPtr(unsigned int r,unsigned int c)const
 {
     // [ASSERT]
-    return data+r*dy+c*dx;
+    return data+r*c_dy+c*c_dx;
 }
 
 
@@ -433,8 +437,8 @@ void ROIScanner::setup(const Image &image,int r,int c,int w,int h)
     regH = h;
     cntR = 0;
     cntC = 0;
-    dx   = image.dx;
-    dy   = image.dy;
+    c_dx = image.c_dx;
+    c_dy = image.c_dy;
     isSetupFlag = true;
     isReadyFlag = true;
     isRowChangeFlag = false;
@@ -460,8 +464,8 @@ void ROIScanner::setup(const Image &image)
     regH = image.height;
     cntR = 0;
     cntC = 0;
-    dx   = image.dx;
-    dy   = image.dy;
+    c_dx   = image.c_dx;
+    c_dy   = image.c_dy;
     isReadyFlag = true;
     isRowChangeFlag = false;
 }
@@ -472,17 +476,17 @@ bool ROIScanner::next(void)
     // If the current state is not valid, return
     if(isReadyFlag==false)
         return false;
-    isRowChangeFlag = false; // The row change flag only set for one turn.
-    cntC++;          // Increase the column counter.
-    cptr += dx;      // Increase the pointer.
-    if(cntC<regW)    // If the right boundary is not met.
+    isRowChangeFlag = false;// The row change flag only set for one turn.
+    cntC++;                 // Increase the column counter.
+    cptr += c_dx;           // Increase the pointer.
+    if(cntC<regW)           // If the right boundary is not met.
         return true;
-    cntC = 0;           // Run to here when reach the boundary
-    cntR++;             // Increase the row counter.
-    cptr += dy-dx*regW; // Rewind the pointer.
+    cntC = 0;               // Run to here when reach the boundary
+    cntR++;                 // Increase the row counter.
+    cptr += c_dy-c_dx*regW; // Rewind the pointer.
     isRowChangeFlag = true; // Set the row change flag.
-    if(cntR<regH)       // Check if comes to the end of the region.
+    if(cntR<regH)           // Check if comes to the end of the region.
         return true;
-    isReadyFlag = false; // To here when it ends.
+    isReadyFlag = false;    // To here when it ends.
     return false;
 }
