@@ -10,28 +10,15 @@
 #include "Image.h"
 #include "Math.h"
 
-struct qCameraParm
-{
-    void setup(float h,float v,float r=1.0f);
-    void setup(Vector3 at,Vector3 to);
-    Vector3 pos;
-    Vector3 dir;
-};
-
 struct qSurfaceGeneratorParm
 {
     // Canvas information
     int width;
     int height;
-    // Camera information
-    float fov;
     // Fractal information
     int   thres;
     int   div;
     float preci;
-    //
-    float zmin;
-    float zmax;
     //
     Quaternion qc;
 };

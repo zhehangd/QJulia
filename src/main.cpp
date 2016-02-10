@@ -72,12 +72,9 @@ int main(int argc,const char **argv)
         qSurfaceGeneratorParm parm1;
         parm1.width  = 1024;
         parm1.height = 1024;
-        parm1.fov    = 0.7;
         parm1.div    = 100;
         parm1.thres  = 12;
         parm1.preci  = 0.0001;
-        parm1.zmin   = 0;
-        parm1.zmax   = 5;
         parm1.qc     = Quaternion(-0.2,0.8,0.0,0.0);
 
         
@@ -140,8 +137,9 @@ int main(int argc,const char **argv)
             {
                 case 's':
                     ss>>parm1.width>>parm1.height;break;
-                case 'f':
-                    ss>>parm1.fov;break;
+                case 'f':{float focus;
+                    ss>>focus;
+                    camera.setupInt(focus,camera.zn,camera.zf);break;}
                 case 'q':
                     ss>>parm1.qc.a>>parm1.qc.i>>parm1.qc.j>>parm1.qc.k;break;
                 case 'c':{ float h=0,v=0,r=1;
@@ -155,8 +153,9 @@ int main(int argc,const char **argv)
                     ss>>parm1.div;break;
                 case 'p':
                     ss>>parm1.preci;break;
-                case 'z':
-                    ss>>parm1.zmin>>parm1.zmax;break;
+                case 'z':{float zmin,zmax;
+                    ss>>zmin>>zmax;
+                    camera.setupInt(camera.f,zmin,zmax);break;}
                 case 'o':
                     ss>>filename;break;
                 case 'l':
@@ -185,11 +184,11 @@ int main(int argc,const char **argv)
         // Show all parameters
         
         cout<<"size:       "<<parm1.width<<" "<<parm1.height<<"\n";
-        cout<<"fov:        "<<parm1.fov<<"\n";
+        cout<<"fov:        "<<camera.f<<"\n";
         cout<<"div:        "<<parm1.div<<"\n";
         cout<<"thres:      "<<parm1.thres<<"\n";
         cout<<"preci:      "<<parm1.preci<<"\n";
-        cout<<"zmin/max:   "<<parm1.zmin<<" "<<parm1.zmax<<"\n";
+        cout<<"zmin/max:   "<<camera.zn<<" "<<camera.zf<<"\n";
         cout<<"quaternion: "<<parm1.qc.a<<" "<<parm1.qc.i<<" "<<parm1.qc.j<<" "<<parm1.qc.k<<"\n";
         cout<<"camera:     "<<"N/A"<<"\n";
         cout<<"light:      "<<"N/A"<<"\n";

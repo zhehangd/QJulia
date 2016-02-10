@@ -14,24 +14,6 @@
 
 using namespace std;
 
-void qCameraParm::setup(float h,float v,float r)
-{
-    float rotHr = h * 3.1416f / 180.0f;
-    float rotVr = v * 3.1416f / 180.0f;
-    float rotHc = cos(rotHr);
-    float rotHs = sin(rotHr);
-    float rotVc = cos(rotVr);
-    float rotVs = sin(rotVr);
-    pos = Vector3(rotVc*rotHc,rotVs,-rotVc*rotHs)*r;
-    dir = normalize(-pos);
-}
-
-void qCameraParm::setup(Vector3 at,Vector3 to)
-{
-    pos = at;
-    dir = normalize(to-at);
-}
-
 // Iteration of q=q^2+c formula
 // >0 converge
 // =0 unconverge
@@ -85,7 +67,7 @@ Image qSurfaceGenerator(const qSurfaceGeneratorParm &parm,const Camera &cam)
     // Pre-compute parameters.
     const int   w  = parm.width,  hw = w/2;
     const int   h  = parm.height, hh = h/2;
-    const float rf = 1.0f / parm.fov;
+    const float rf = 1.0f / cam.f;
     
     Image  image(w,h,3,IMAGE_FLOAT); // The background has inifity value.
     
@@ -101,12 +83,10 @@ Image qSurfaceGenerator(const qSurfaceGeneratorParm &parm,const Camera &cam)
         int c = scan.currentCol();
         float x = rf*( c-hw)/hh; // to keep ratio constant, both divided by h/2.
         float y = rf*(-r+hh)/hh;
-        float kn = 0.25f*parm.zmin; // developing perspective
-        float kf = 0.25f*parm.zmax;
         // Construct start and end positions.
         // Note that in the camera coordinate system, z-axis points backward.
-        Vector3 vs = camera.projectInv(Vector3(x,y,-parm.zmin)).v3();
-        Vector3 ve = camera.projectInv(Vector3(x,y,-parm.zmax)).v3();
+        Vector3 vs = camera.projectInv(Vector3(x,y,-cam.zn)).v3();
+        Vector3 ve = camera.projectInv(Vector3(x,y,-cam.zf)).v3();
         // Run search algorithm to find the first surface point.
         Vector3 v  = quatSearch(vs,ve,parm.qc,parm.div,parm.preci,parm.thres).v;
         // Write to the buffer.

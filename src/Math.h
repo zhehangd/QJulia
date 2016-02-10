@@ -241,11 +241,15 @@ class Camera
     void setupExt(Vector3 s,Vector3 d,Vector3 u=Vector3(0,1,0));
     // Setup extrinsic parameters by polar coordinates format.
     void setupExt(float h,float v,float r);
-    void setupInt(float f,float aspect,float nz,float fz);
+    void setupInt(float focus,float zNear,float zFar);
     
     Vector4 project(Vector4 v);
     Vector4 projectInv(Vector4 v);
     
+    // Focus.
+    float f;
+    // zmin and zmax.
+    float zn,zf;
     // Transform matrix (row priority).
     // m:    world  coordinates to camera coordinates.
     // mInv: camera coordinates to world  coordinates.

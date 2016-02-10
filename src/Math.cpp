@@ -58,7 +58,7 @@ float dot(const Vector3 &v1,const Vector3 &v2)
     return (v1*v2).sum();
 }
 
-Camera::Camera(void)
+Camera::Camera(void):zn(0.0f),zf(5.0f),f(1.0f)
 {
     for(int i=0;i<16;i++)
         ((float*)m)[i] = 0;
@@ -117,8 +117,12 @@ void Camera::setupExt(float h,float v,float r)
     setupExt(pos,Vector3(0,0,0),Vector3(0,1,0));
 }
 
-void Camera::setupInt(float f,float aspect,float nz,float fz)
+void Camera::setupInt(float focus,float zNear,float zFar)
 {
+    f  = focus;
+    zf = zFar;
+    zn = zNear;
+    
     // Perspective
     /*
     for(int i=0;i<16;i++)
