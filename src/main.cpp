@@ -20,11 +20,11 @@ using namespace std;
 // This is still in the very begining.
 // Apologies for all the mess of code.
 
-Image draw(qSurfaceGeneratorParm &parm1,qLightFieldParm &parm2,qCameraParm &camp)
+Image draw(qSurfaceGeneratorParm &parm1,qLightFieldParm &parm2,Camera &camera)
 {
 
     cout<<"Calculating the surface..."<<endl;
-    Image surf = qSurfaceGenerator(parm1,camp);
+    Image surf = qSurfaceGenerator(parm1,camera);
     
     cout<<"Calculating the normal vectors..."<<endl;
     Image norm  = qComputeNormal(surf);
@@ -79,12 +79,11 @@ int main(int argc,const char **argv)
         parm1.zmin   = 0;
         parm1.zmax   = 5;
         parm1.qc     = Quaternion(-0.2,0.8,0.0,0.0);
-        
 
-        // Parm - Camera
-        qCameraParm camp;
-        camp.setup(60,30,1);
-        //camp.setup(Vector3(-1.2555,0.342,0.5),Vector3(-1.2555,0.342,0));
+        
+        Camera camera;
+        camera.setupExt(60,30,1);
+        
         
         
         // Parm - Lighting
@@ -146,10 +145,10 @@ int main(int argc,const char **argv)
                 case 'q':
                     ss>>parm1.qc.a>>parm1.qc.i>>parm1.qc.j>>parm1.qc.k;break;
                 case 'c':{ float h=0,v=0,r=1;
-                    ss>>h>>v>>r; camp.setup(h,v,r);break;}
+                    ss>>h>>v>>r; camera.setupExt(h,v,r);break;}
                 case 'C':{float f[3],t[3];
                     ss>>f[0]>>f[1]>>f[2]>>t[0]>>t[1]>>t[2];
-                    camp.setup(Vector3(f),Vector3(t));break;}
+                    camera.setupExt(Vector3(f),Vector3(t));break;}
                 case 't':
                     ss>>parm1.thres;break;
                 case 'd':
@@ -196,7 +195,7 @@ int main(int argc,const char **argv)
         cout<<"light:      "<<"N/A"<<"\n";
         cout<<"output:     "<<filename<<"\n";
 
-        Image canvas = draw(parm1,parm2,camp);
+        Image canvas = draw(parm1,parm2,camera);
         canvas.write(filename.c_str());
     }
     // =============================

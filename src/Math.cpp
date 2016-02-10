@@ -104,6 +104,18 @@ void Camera::setupExt(Vector3 s,Vector3 d,Vector3 u)
     mInv[3][3]=1;
 }
 
+void Camera::setupExt(float h,float v,float r)
+{
+    const float deg2rad = 3.1415927f/180.0f;
+    float rotHr = h * deg2rad;
+    float rotVr = v * deg2rad;
+    float rotHc = cos(rotHr);
+    float rotHs = sin(rotHr);
+    float rotVc = cos(rotVr);
+    float rotVs = sin(rotVr);
+    Vector3 pos = Vector3(rotVc*rotHc,rotVs,-rotVc*rotHs)*r;
+    setupExt(pos,Vector3(0,0,0),Vector3(0,1,0));
+}
 
 void Camera::setupInt(float f,float aspect,float nz,float fz)
 {

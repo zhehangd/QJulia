@@ -237,7 +237,10 @@ class Camera
         
     Camera(void);
     
-    void setupExt(Vector3 s,Vector3 d,Vector3 u);
+    // Setup extrinsic parameters by "LookAt" format.
+    void setupExt(Vector3 s,Vector3 d,Vector3 u=Vector3(0,1,0));
+    // Setup extrinsic parameters by polar coordinates format.
+    void setupExt(float h,float v,float r);
     void setupInt(float f,float aspect,float nz,float fz);
     
     Vector4 project(Vector4 v);

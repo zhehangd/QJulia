@@ -80,7 +80,7 @@ Vector3 quatSearch(Vector3 vs,Vector3 ve,Quaternion c,int div,float prec,int thr
     return (ub+lb)/2;
 }
 
-Image qSurfaceGenerator(const qSurfaceGeneratorParm &parm,const qCameraParm &camp)
+Image qSurfaceGenerator(const qSurfaceGeneratorParm &parm,const Camera &cam)
 {
     // Pre-compute parameters.
     const int   w  = parm.width,  hw = w/2;
@@ -90,8 +90,7 @@ Image qSurfaceGenerator(const qSurfaceGeneratorParm &parm,const qCameraParm &cam
     Image  image(w,h,3,IMAGE_FLOAT); // The background has inifity value.
     
     // Set up the view transformation.
-    Camera camera;
-    camera.setupExt(camp.pos,camp.pos+camp.dir,Vector3(0,1,0));
+    Camera camera = cam;
     // Progress indicator.
     int progress = 10;
     // Scan the image

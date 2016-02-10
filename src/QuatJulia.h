@@ -52,7 +52,7 @@ struct qLightFieldParm
 };
 
 
-Image qSurfaceGenerator(const qSurfaceGeneratorParm &parm, const qCameraParm &camp);
+Image qSurfaceGenerator(const qSurfaceGeneratorParm &parm, const Camera &cam);
 
 Image qComputeNormal(Image surf);
 
