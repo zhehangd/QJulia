@@ -1,4 +1,4 @@
-Hello, QJulia v0.1 is released. This is program draws so called "Quaternion Julia Fractals", you can google "Fractal"/"Julia Set"/"Quaternion Julia Fractal/Set" to know what they are. This program is driven by command-line, a set paramters can be used to instruct how the program draw the fractal. Our implementation mainly refers to 
+QJulia v0.1 is released. This is program draws so called "Quaternion Julia Fractals", you can google "Fractal"/"Julia Set"/"Quaternion Julia Fractal/Set" to know what they are. This program is driven by command-line, a set paramters can be used to instruct how the program draw the fractal. Our implementation mainly refers to 
 
 Rosa, Alessandro. "Methods and applications to display quaternion Julia sets." Electronic Journal of Differential Equations and Control Processes, St. Petersburg 4 (2005): 1-22.
 
@@ -18,6 +18,9 @@ Prospective Features:
  - Animation Tool
  - Real-Time Preview.
  - ...
+
+Version History:
+    02/11/2016 v0.1    The first version was humbly released.
 
 ---------------------------------------
 Usage: ./QJulia [-option1 value] [-option2 value] ...
