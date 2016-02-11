@@ -27,13 +27,9 @@ public:
     ~Image(void){release();}
     
     //====================== I/O Methods ======================
-
-    // Detach the object from the memory block that contains image data.
-    // if this object is the last one that points to the block, it deallocates
-    // the memory block, otherwise it does nothing to the block and simply sets the
-    // pointers as 0. This is realized by creating a integer counter maintained by all objects
-    // pointing to a same block. The counter shows how many objects are pointing to the block.
-    void release(void);
+    // Delete the image memory and information.
+    void clear(void);
+    
 
     // Create a new blank image
     // [w] and [h] are width and height respectively, do not reverse it. 
@@ -139,8 +135,12 @@ private:
     // Allocate memory for image data.
     void allocate(unsigned int length);
     
-    // Set all member variables to zero, regardless memory leakage issue.
-    void clear(void);
+    // Detach the object from the memory block that contains image data.
+    // if this object is the last one that points to the block, it deallocates
+    // the memory block, otherwise it does nothing to the block and simply sets the
+    // pointers as 0. This is realized by creating a integer counter maintained by all objects
+    // pointing to a same block. The counter shows how many objects are pointing to the block.
+    void release(void);
 
 };
 
