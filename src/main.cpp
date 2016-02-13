@@ -49,8 +49,9 @@ Image draw(qSurfaceGeneratorParm &parm1,qLightFieldParm &parm2,Camera &camera)
 // -p precision            ~
 // -z "zmin zmax"          ~
 // -q "a i j k"            ~
-// -c "h v"                ~
+// -v "h v"                ~
 // -C "ex ey ez tx ty tz"  ~
+// -c "ex ey ez h v"       ~
 // -l a
 // -l 0/1/2a/d/pr,g,b      ~
 // -o filename             ~
@@ -80,7 +81,7 @@ int main(int argc,const char **argv)
         
         Camera camera;
         camera.setupExt(60,30,1);
-        
+        camera.setupInt(1,0.3,10);
         
         
         // Parm - Lighting
@@ -123,6 +124,7 @@ int main(int argc,const char **argv)
         parser.add('q',true); parser.add('c',true);
         parser.add('l',true); parser.add('o',true);
         parser.add('C',true); parser.add('h',false);
+        parser.add('v',true);
         // Parse the arguments.
         parser.parse(argc,argv);
         
@@ -142,8 +144,11 @@ int main(int argc,const char **argv)
                     camera.setupInt(focus,camera.zn,camera.zf);break;}
                 case 'q':
                     ss>>parm1.qc.a>>parm1.qc.i>>parm1.qc.j>>parm1.qc.k;break;
-                case 'c':{ float h=0,v=0,r=1;
+                case 'v':{ float h=0,v=0,r=1;
                     ss>>h>>v>>r; camera.setupExt(h,v,r);break;}
+                case 'c':{float f[3],h,v;
+                    ss>>f[0]>>f[1]>>f[2]>>h>>v;
+                    camera.setupExt(Vector3(f),h,v);break;}
                 case 'C':{float f[3],t[3];
                     ss>>f[0]>>f[1]>>f[2]>>t[0]>>t[1]>>t[2];
                     camera.setupExt(Vector3(f),Vector3(t));break;}

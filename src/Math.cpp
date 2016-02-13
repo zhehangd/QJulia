@@ -117,6 +117,20 @@ void Camera::setupExt(float h,float v,float r)
     setupExt(pos,Vector3(0,0,0),Vector3(0,1,0));
 }
 
+// Setup extrinsic parameters by position and direction
+void Camera::setupExt(Vector3 s, float h,float v)
+{
+    const float deg2rad = 3.1415927f/180.0f;
+    float rotHr = h * deg2rad;
+    float rotVr = v * deg2rad;
+    float rotHc = cos(rotHr);
+    float rotHs = sin(rotHr);
+    float rotVc = cos(rotVr);
+    float rotVs = sin(rotVr);
+    Vector3 dir = Vector3(rotVc*rotHc,rotVs,-rotVc*rotHs);
+    setupExt(s,s+dir,Vector3(0,1,0));
+}
+
 void Camera::setupInt(float focus,float zNear,float zFar)
 {
     f  = focus;

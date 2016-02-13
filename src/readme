@@ -36,7 +36,7 @@ Usage: ./QJulia [-option1 value] [-option2 value] ...
   -p     Precision         0.0001
   -z     Depth             "1 8"
   -q     Constant          "-0.2 0.8 0.0 0.0"
-  -c     Camera            "60 30 4"
+  -v     Camera            "60 30 4"
   -C     Camera            "4 3 2 0 0 0"
   -l     Light             SEE DESCRIPTION
   -o     Filename          Julia.data

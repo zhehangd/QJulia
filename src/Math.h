@@ -241,6 +241,9 @@ class Camera
     void setupExt(Vector3 s,Vector3 d,Vector3 u=Vector3(0,1,0));
     // Setup extrinsic parameters by polar coordinates format.
     void setupExt(float h,float v,float r);
+    // Setup extrinsic parameters by position and direction
+    void setupExt(Vector3 s, float h,float v);
+    // Setup intrinsic parameters.
     void setupInt(float focus,float zNear,float zFar);
     
     Vector4 project(Vector4 v)const;
