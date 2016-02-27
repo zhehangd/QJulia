@@ -1,15 +1,15 @@
 # QJulia
 
-Hello, QJulia v0.1 is released. This is program draws so called "Quaternion Julia Fractals", you can google "Fractal"/"Julia Set"/"Quaternion Julia Fractal/Set" to know what they are. This program is driven by command-line, a set paramters can be used to instruct how the program draw the fractal. Our implementation mainly refers to 
+<p>Hello, QJulia v0.1 is released. This is program draws so called "Quaternion Julia Fractals", you can google "Fractal"/"Julia Set"/"Quaternion Julia Fractal/Set" to know what they are. This program is driven by command-line, a set paramters can be used to instruct how the program draw the fractal. Our implementation mainly refers to </p>
+<ul>
+<li>Rosa, Alessandro. "Methods and applications to display quaternion Julia sets." Electronic Journal of Differential Equations and Control Processes, St. Petersburg 4 (2005): 1-22.</l<p>
+</ul>
 
-Rosa, Alessandro. "Methods and applications to display quaternion Julia sets." Electronic Journal of Differential Equations and Control Processes, St. Petersburg 4 (2005): 1-22.
+<p>Here I briefly explain how this program works. The key idea is, we divide the space into a 3D grid, take one sample from each cell and see whether it belongs to the fractal set(which is convergent under the iteration). We choose the coordinate system of our camera to make this division. So a stack of cells along the depth axis is aligned with a pixel. We then search along the stack one by one until we find a fractal point. We refine our finding by searching between the two cells we just computed, and locate the surface of our fractal(there is no such a real surface for a fractal, it is more like a contour line). A surface map is then generate when we finished this searching for all pixels. In the surface map each pixel has three channels which store the x,y,z coordinate of the surface point it detected. This procedure is the most time consuming part of our program. Next, we try to estimate the normal vectors of the surface from our surface map. This is done by take difference of adjcent pixels. And use cross product to get the normals. For an on-surface point this gives a good estimation of the normal. For an on-edge point the normal mostly is parallel to the screen, because the adjacent pixel it takes is on the surface behind of in front of it, causing a wrong estimation. However, this surprisingly gives a very good appearance of an edge. The outcome of this step is a normal map, where each pixel cotains a normal vector. This the last step, we use the Phong model to assign colors to the fractal, based on the configuration of lights.</p>
 
-Here I briefly explain how this program works. The key idea is, we divide the space into a 3D grid, take one sample from each cell and see whether it belongs to the fractal set(which is convergent under the iteration). We choose the coordinate system of our camera to make this division. So a stack of cells along the depth axis is aligned with a pixel. We then search along the stack one by one until we find a fractal point. We refine our finding by searching between the two cells we just computed, and locate the surface of our fractal(there is no such a real surface for a fractal, it is more like a contour line). A surface map is then generate when we finished this searching for all pixels. In the surface map each pixel has three channels which store the x,y,z coordinate of the surface point it detected. This procedure is the most time consuming part of our program. Next, we try to estimate the normal vectors of the surface from our surface map. This is done by take difference of adjcent pixels. And use cross product to get the normals. For an on-surface point this gives a good estimation of the normal. For an on-edge point the normal mostly is parallel to the screen, because the adjacent pixel it takes is on the surface behind of in front of it, causing a wrong estimation. However, this surprisingly gives a very good appearance of an edge. The outcome of this step is a normal map, where each pixel cotains a normal vector. This the last step, we use the Phong model to assign colors to the fractal, based on the configuration of lights.
+<p>This prgram is distributed under GPLv3 license. Questions, suggestions and contributions are very welcome. Contact me via dingzhehang@gmail.com.</p>
 
-This prgram is distributed under GPLv3 license. Questions, suggestions and contributions are very welcome. Contact me via dingzhehang@gmail.com.
-
-    Zhehang Ding     Feb.11,2016
-
+<p>    Zhehang Ding     Feb.11,2016</p>
 
 Current Features:
  - Perspective Projection.
@@ -21,11 +21,11 @@ Prospective Features:
  - Real-Time Preview.
  - ...
 
----------------------------------------
+<h1>Usage Instruction</h1>
+
 Usage: ./QJulia [-option1 value] [-option2 value] ...
---------------------------------------
+
   option name              example
----------------------------------------
   -s     Size              "800 600"
   -f     Magnification     1.0
   -d     Division          200
@@ -37,7 +37,7 @@ Usage: ./QJulia [-option1 value] [-option2 value] ...
   -C     Camera            "4 3 2 0 0 0"
   -l     Light             SEE DESCRIPTION
   -o     Filename          Julia.data
----------------------------------------
+
 Size:
   Size of the image, expressed in "width height" format. The spatial resolution is the most important parameter to control the quality of the rendering, since it determines how accurate we estimate the normal vector. Personal opinion is, 512x512 gives a good preview, 1024x1024 gives an acceptable image, more then 3000x3000 gives a very beature result but also costs a lot of time.
 
