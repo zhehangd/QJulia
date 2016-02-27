@@ -1,7 +1,7 @@
 // File:   Image.cpp
 // Author: Zhehang Ding
 // Email:  dingzhehang1993@gmail.com
-// Data:   Feb. 07, 2016
+// Data:   Feb. 27, 2016
 
 // C++11 round() is used.
 #include <cmath>
@@ -37,7 +37,7 @@ void Image::create(unsigned int w,unsigned int h,unsigned int ch,int t)
     
     // Allocate memory and initialize it.
     allocate(mSize);
-    for(int i=0;i<mSize;i++)
+    for(unsigned int i=0;i<mSize;i++)
         data[i] = 0;
 }
 
@@ -145,10 +145,10 @@ Image Image::convert(int dstType)
         {
             dst.create(width,height,channel,dstType);
             if(dstType==IMAGE_INT)
-                for(int i=0;i<numel;i++)
+                for(unsigned int i=0;i<numel;i++)
                     ((int*)dst.data)[i] = ((float*)data)[i];
             else
-                for(int i=0;i<numel;i++)
+                for(unsigned int i=0;i<numel;i++)
                 {
                     float v = ((float*)data)[i];v = v>255?255:v>0?v:0;
                     ((unsigned char*)dst.data)[i] = (unsigned char)v;
@@ -165,10 +165,10 @@ Image Image::convert(int dstType)
             {
                 dst.create(width,height,channel,dstType);
                 if(dstType==IMAGE_FLOAT)
-                    for(int i=0;i<numel;i++)
+                    for(unsigned int i=0;i<numel;i++)
                         ((float*)dst.data)[i] = ((int*)data)[i];
                 else
-                    for(int i=0;i<numel;i++)
+                    for(unsigned int i=0;i<numel;i++)
                     {
                         int v = ((int*)data)[i]; v = v>255?255:v>0?v:0;
                         ((unsigned char*)dst.data)[i] = v;
@@ -181,10 +181,10 @@ Image Image::convert(int dstType)
             {
                 dst.create(width,height,channel,dstType);
                 if(dstType==IMAGE_FLOAT)
-                    for(int i=0;i<numel;i++)
+                    for(unsigned int i=0;i<numel;i++)
                         ((float*)dst.data)[i] = ((unsigned char*)data)[i];
                 else
-                    for(int i=0;i<numel;i++)
+                    for(unsigned int i=0;i<numel;i++)
                         ((int*)dst.data)[i] = ((unsigned char*)data)[i];
             }
             else
@@ -236,16 +236,16 @@ void Image::show(int r,int c,int w,int h)
         {
             
             case IMAGE_FLOAT:
-                for(int i=0;i<1;i++)
+                for(unsigned int i=0;i<1;i++)
                     std::cout<<*scan.ptr<float>(i)<<",";
                 break;    
                 
             case IMAGE_INT:
-                for(int i=0;i<1;i++)
+                for(unsigned int i=0;i<1;i++)
                     std::cout<<*scan.ptr<int>(i)<<",";
                 break;
             default:
-                for(int i=0;i<1;i++)
+                for(unsigned int i=0;i<1;i++)
                     std::cout<<(int)*scan.ptr<unsigned char>(i)<<",";
                 break;
         }
@@ -395,25 +395,26 @@ Image Image::operator*(float c)const
 
 Image Image::operator/(float c)const
 {
+    Image dst = this->clone();
     switch(type)
     {
         case IMAGE_FLOAT:
         {
-            float *ptr = (float*)getPixelPtr(0,0);
+            float *ptr = (float*)dst.getPixelPtr(0,0);
             for(unsigned int i=0;i<numel;i++)
                 ptr[i] /= c;
             break;
         }
         case IMAGE_INT:
         {
-            int *ptr = (int*)getPixelPtr(0,0);
+            int *ptr = (int*)dst.getPixelPtr(0,0);
             for(unsigned int i=0;i<numel;i++)
                 ptr[i] = std::round((float)ptr[i]/c);
             break;
         }
          default:
         {
-            char *ptr = (char*)getPixelPtr(0,0);
+            char *ptr = (char*)dst.getPixelPtr(0,0);
             for(unsigned int i=0;i<numel;i++)
             {
                 int v = std::round((float)ptr[i]*c);
@@ -423,6 +424,7 @@ Image Image::operator/(float c)const
             break;
         }
     }
+    return dst;
 }
 
 

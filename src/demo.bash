@@ -20,7 +20,7 @@ filename=Julia.data
 
 # QJulia
 ./QJulia -q "-0.450 0.447 0.181 0.306" -v "30 -10 2" -f 2 \
-         -t 18 -d 100 -z "0.1 10" -o $filename -s "${rsize/x/ }"
+         -t 18 -d 200 -z "0.1 10" -o $filename -s "${rsize/x/ }"
 # ImageMagick
 convert -size $rsize -depth 8 \
           rgb:$filename $(echo $filename | cut -f 1 -d '.').png
