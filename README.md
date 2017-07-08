@@ -1,9 +1,17 @@
 # QJulia
 
-## v0.2 In Progress
-Multithreading support.
+## Log
 
-## v0.1 Feb.11,2016
+### v0.2 In Progress
+
+Adding multithreading support.
+
+---
+
+### v0.1 Feb.11,2016
+
+
+
 
 
 
