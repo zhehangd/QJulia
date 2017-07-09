@@ -9,6 +9,7 @@
 
 using namespace std;
 
+
 float VecDot(const float *v1,const float *v2)
 {
   return v1[0]*v2[0]+v1[1]*v2[1]+v1[2]*v2[2];
@@ -30,10 +31,8 @@ void VecMultMatrix(float *dst,const float m[4][4],const float *src)
       dst[i] /= w;
 }
 
+Camera::Camera(void) {
 
-Camera::Camera(void)
-{
-  f  = 1; fz = 1;
   hw = 0; hh = 0; fs = 0;
   Xcw[0][0] = Xcw[1][1] = Xcw[2][2] = Xcw[3][3] = 1;
   Xcw[0][1] = Xcw[0][2] = Xcw[0][3] = 0;
@@ -45,8 +44,8 @@ Camera::Camera(void)
   iXcw[1][0] = iXcw[1][2] = iXcw[1][3] = 0;
   iXcw[2][0] = iXcw[2][1] = iXcw[2][3] = 0;
   iXcw[3][0] = iXcw[3][1] = iXcw[3][2] = 0;
-}
 
+}
 
 void Camera::setupExt(const float *src,const float *dst,const float *up)
 {
@@ -120,12 +119,8 @@ void Camera::setupExt(const float *src,float h,float v)
   setupExt(src,dst,up);
 }
 
-void Camera::setupInt(float focus,float zmax)
-{
-  zm = zmax;
-  f  = focus;
-  fz = (zmax+focus)/(zmax + 1e-6);
-}
+
+
 
 void Camera::setupScn(float w,float h,bool align_h)
 {
@@ -134,6 +129,34 @@ void Camera::setupScn(float w,float h,bool align_h)
   fs = align_h ? hh : hw;
 }
 
+
+void Camera::projectXsp(float *dst,float *src)const
+{
+  dst[0] =   src[0] * fs + hw;
+  dst[1] = - src[1] * fs + hh;
+}
+
+void Camera::projectInvXsp(float *dst,float *src)const
+{
+  dst[0] =   (src[0] - hw) / fs;
+  dst[1] = - (src[1] - hh) / fs;
+}
+
+void Camera::projectXcw(float *dst,float *src)const
+{
+  float s4[] = {src[0],src[1],src[2],1};
+  float d4[] = {}; VecMultMatrix(d4,Xcw,s4);
+  for(int i=0;i<3;i++)
+    dst[i] = d4[i];
+}
+
+void Camera::projectInvXcw(float *dst,float *src)const
+{
+  float s4[] = {src[0],src[1],src[2],1};
+  float d4[] = {}; VecMultMatrix(d4,iXcw,s4);
+  for(int i=0;i<3;i++)
+    dst[i] = d4[i];
+}
 
 void Camera::projectXsw(float *dst,float *src)const
 {
@@ -161,15 +184,31 @@ void Camera::projectInvXsc(float *dst,float *src)const
   projectInvXpc(dst,dst);
 }
 
-void Camera::projectXcw(float *dst,float *src)const
+
+
+
+
+
+
+CameraPersp::CameraPersp(void) : Camera()
 {
-  float s4[] = {src[0],src[1],src[2],1};
-  float d4[] = {}; VecMultMatrix(d4,Xcw,s4);
-  for(int i=0;i<3;i++)
-    dst[i] = d4[i];
+  f  = 1;
+  fz = 1;
 }
 
-void Camera::projectXpc(float *dst,float *src)const
+void CameraPersp::setupInt(float focus,float zmax)
+{
+  zm = zmax;
+  f  = focus;
+  fz = (zmax+focus)/(zmax + 1e-6); 
+}
+
+
+
+
+
+
+void CameraPersp::projectXpc(float *dst,float *src)const
 {
   float w = f - src[2];
   dst[0]  = f  * src[0] / w;
@@ -177,30 +216,11 @@ void Camera::projectXpc(float *dst,float *src)const
   dst[2]  =-fz * src[2] / w;
 }
 
-void Camera::projectXsp(float *dst,float *src)const
-{
-  dst[0] =   src[0] * fs + hw;
-  dst[1] = - src[1] * fs + hh;
-}
 
-void Camera::projectInvXcw(float *dst,float *src)const
-{
-  float s4[] = {src[0],src[1],src[2],1};
-  float d4[] = {}; VecMultMatrix(d4,iXcw,s4);
-  for(int i=0;i<3;i++)
-    dst[i] = d4[i];
-}
-
-void Camera::projectInvXpc(float *dst,float *src)const
+void CameraPersp::projectInvXpc(float *dst,float *src)const
 {
   dst[2] = src[2] * f / (-fz + src[2]);
   float w = f - dst[2];
   dst[0] = src[0] * w / f;
   dst[1] = src[1] * w / f;
-}
-
-void Camera::projectInvXsp(float *dst,float *src)const
-{
-  dst[0] =   (src[0] - hw) / fs;
-  dst[1] = - (src[1] - hh) / fs;
 }

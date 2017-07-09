@@ -6,66 +6,110 @@
 #ifndef CAMERA_H_
 #define CAMERA_H_
 
-#include <cmath>
-
-
-// w: world
-// c: camera
-// p: perspective
-// s: screen
+// Coordinate Systems:
+// w: world      :  object's native (right-handed) coordinates .
+// c: camera     :  coordinate system rotated from the world system.
+//                  the origin locates at the camera center.
+//                  right-handed coordinate system.
+//                  -z axis pointing to the orientation of the camera.
+//                   x axis pointing to the right-hand side.
+//                   y axis pointing upward.
+// p: projection :  left-handed coordinate system projected from the
+//                  camera system. The origin and the directions of
+//                  the x,y axes keep the same.
+// s: screen        x,y are mapped to the screen coordinates.
+//                  one of them, y by default, is used as a reference.
+//                  y: [1,-1] -> [0,height] (reversed)
+//                  x: [-m,m] -> [0,width]
+//                     m is selected to keep the aspect ratio.
+//                  z is not involved.
+// Methods:
+// projectXab:     projecting from system b to system a.
+// projectInvXsw:  projecting from a to b.
+// setupExt:       a set of methods that set camera's position and orentation.
+// setupInt:       a set of methods that set camera's projection algorithm.
+// setupScn:       a set of methods that set the size of the screen .
 
 class Camera {
-    public:
+  
+public:
         
     Camera(void);
     
-    // Setup extrinsic parameters by "LookAt" format.
+    // Set up extrinsic parameters with "LookAt" style.
     void setupExt(const float *src,const float *dst,const float *up);
     
-    // Setup extrinsic parameters by polar coordinates format.
+    // Set up extrinsic parameters with "LookAtOrigin" style.
     void setupExt(float h,float v,float r);
-    // Setup extrinsic parameters by position and direction
-    void setupExt(const float *s, float ha,float va);
     
+    // Set up extrinsic parameters with "GunTurret" style.
+    void setupExt(const float *s, float ha,float va);
+
     // Setup intrinsic parameters.
-    void setupInt(float focus,float zmax);
+    virtual void setupInt(float focus,float zmax) {}
     
     // Setup screen parameters.
     // align_h: if true, align the view by height, otherwise width.
-    void setupScn(float w,float h,bool align_h=false);
+    void setupScn(float w,float h,bool align_h=true);
     
     void projectXsw(float *dst,float *src)const;
     void projectInvXsw(float *dst,float *src)const;
-    
+
     void projectXsc(float *dst,float *src)const;
     void projectInvXsc(float *dst,float *src)const;
 
     void projectXcw(float *dst,float *src)const;
-    void projectXpc(float *dst,float *src)const;
     void projectXsp(float *dst,float *src)const;
-    
+
     void projectInvXcw(float *dst,float *src)const;
-    void projectInvXpc(float *dst,float *src)const;
     void projectInvXsp(float *dst,float *src)const;
+
+    virtual void projectXpc(float *dst,float *src)const
+                           {for(int i=0;i<3;i++)dst[i]=src[i];}
+    virtual void projectInvXpc(float *dst,float *src)const
+                           {for(int i=0;i<3;i++)dst[i]=src[i];}
     
-    float getZmax(void)const{return zm;}
-    float getFocus(void)const{return f;}
+protected:
+  
+  // Screen Parameters
+  float hw;
+  float hh;
+  float fs;
+  
+  float Xcw[4][4];
+  float iXcw[4][4];
+  
+};
+
+
+//  ----------------------------------
+//  right-hand       left-hand
+//
+//      /|              |\
+//     / |              |
+//    /| | x   ----> x' |
+//   /_|_|              |___\
+//    f -z              0 z  zmax
+//  ===================================
+class CameraPersp : public Camera {
+  
+public:
+        
+    CameraPersp(void);
     
-    void getPosition(float *dst)const{for(int i=0;i<3;i++)dst[i]=iXcw[i][3];}
+    // Setup intrinsic parameters.
+    void setupInt(float focus,float zmax);
+
+    void projectXpc(float *dst,float *src)const;
+    void projectInvXpc(float *dst,float *src)const;
 
     // Intrinsic Parameters
     float f;
     float fz; // -(zmax+f)/zmax.
     float zm; // zmax
     
-    // Screen Parameters
-    float hw;
-    float hh;
-    float fs;
-    
     //
-    float Xcw[4][4];
-    float iXcw[4][4];
+
 };
 
 
@@ -73,9 +117,6 @@ class CameraOrtho : public Camera {
   // prospective feature
 };
 
-class CameraPerep : public Camera {
-  // prospective feature
-};
 
 class CameraStereo : public Camera {
   // prospective feature
