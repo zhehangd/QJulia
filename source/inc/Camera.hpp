@@ -8,17 +8,13 @@
 
 #include <cmath>
 
-//
-// Xsp
-// Xiw
 
 // w: world
 // c: camera
 // p: perspective
 // s: screen
 
-class Camera
-{
+class Camera {
     public:
         
     Camera(void);
@@ -72,5 +68,17 @@ class Camera
     float iXcw[4][4];
 };
 
+
+class CameraOrtho : public Camera {
+  // prospective feature
+};
+
+class CameraPerep : public Camera {
+  // prospective feature
+};
+
+class CameraStereo : public Camera {
+  // prospective feature
+};
 
 #endif

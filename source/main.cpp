@@ -2,6 +2,8 @@
 #include <iomanip>
 #include <vector>
 #include <memory>
+#include <thread>
+#include <complex>
 
 #include "Console.hpp"
 #include "Utility.hpp"
@@ -11,7 +13,7 @@
 #include "Math.hpp"
 
 
-
+# if 0
 
 struct Light {
   Vector3 position;
@@ -52,12 +54,114 @@ public:
   
 } *app;
 
+# endif
+
+
+
+
+
+class App {
+public:
+  // Let us render a julia set,
+  void start(void) {
+    
+    int width   = 800;
+    int height  = 600;
+    float cx    = 0.0f;
+    float cy    = 0.0f;
+    float focus = 0.004f;
+    const int aa = 6;
+    std::complex<float> c(-.4f,.6f);
+    
+    ImFloat* canvas = new ImFloat(width,height,3,IMAGE_F32);
+    
+    
+    // x-shift, y-shift, weight
+    float AAFilter[6][3] = {
+      -.52f,  .38f, .128f, 
+       .41f,  .56f, .119f,
+       .27f,  .08f, .294f,
+      -.17f, -.29f, .249f,
+       .58f, -.55f, .104f,
+      -.31f, -.71f, .106f,
+    };
+
+    
+
+    Image* aabuff = new Image(width,height,aa,IMAGE_U8);
+    
+    for (int k=0;k<aa;k++) {
+      for (ImCursor scan(*aabuff); !scan.eof(); scan.moveNext()) {
+        std::complex<float> x(scan.cc,scan.cr);
+        x -= std::complex<float>(width,height) * 0.5f;
+        x += std::complex<float>(AAFilter[k][0],AAFilter[k][1]);
+        x *= focus;
+        x += std::complex<float>(cx,cy);
+        
+        
+        int val = 0;
+        for(val=0;val<255;val++) {
+          x = x*x + c;
+          if (std::norm(x)>2.0f)
+            break;
+        }
+        unsigned char* pix = (unsigned char*)scan.ptr();
+        pix[k] = val;
+      }
+      
+    }
+    
+    float max = 1e-6f;
+    ImCursor scan_canvas(*canvas);
+    ImCursor scan_buffer(*aabuff);
+    for (;!scan_canvas.eof(); scan_canvas.moveNext(),scan_buffer.moveNext()) {
+      float* val_canvas = (float*)scan_canvas.ptr();
+      unsigned char* val_buffer = (unsigned char*)scan_buffer.ptr();
+      
+      float val = 0;
+      for (int i=0;i<aa;i++)
+        val += val_buffer[i];
+      
+      max  = val>max ? val : max;
+      
+      val_canvas[0] = (float) val;
+      val_canvas[1] = (float) val;
+      val_canvas[2] = (float) val;
+    }
+    
+    for (ImCursor scan(*canvas); !scan.eof(); scan.moveNext()) {
+      float* val = (float*)scan.ptr();
+      val[0] /= max;
+      val[1] /= max;
+      val[2] /= max;
+    }
+    
+    
+    imwrite(*canvas,"test.ppm");
+    
+    
+  }
+  
+  
+};
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 int main(int argc,const char **argv) {
   
   
-  app = new App();
+  App* app = new App();
   app->start();
   
   return 0;
