@@ -15,14 +15,14 @@
 
 using namespace std;
 
-ImageStruct::ImageStruct(void)
+ImageBase::ImageBase(void)
 {
   data=0; origin=0; copycount=0;
   width=height=channel=0;
   elength=cdx=cdy=0;
 }
 
-void ImageStruct::create(PixCoord w,PixCoord h,PixCoord ch,PixType elen)
+void ImageBase::create(int w,int h,int ch,int elen)
 {
   width   = w;
   height  = h;
@@ -34,7 +34,7 @@ void ImageStruct::create(PixCoord w,PixCoord h,PixCoord ch,PixType elen)
   allocate(width*height*channel*elength);
 }
 
-void ImageStruct::link(const ImageStruct& src)
+void ImageBase::link(const ImageBase& src)
 {
   if (&src == this)
     return;
@@ -53,32 +53,32 @@ void ImageStruct::link(const ImageStruct& src)
   //cout<<"["<<(int*)origin<<"] "<<"Increase to "<<(*copycount)<<endl;
 }
 
-void ImageStruct::copy(const ImageStruct& src)
+void ImageBase::copy(const ImageBase& src)
 {
   if (&src == this)
     return;
   create(src.width,src.height,src.channel,src.elength);
-  for(PixCoord r=0;r<height;r++)
+  for(int r=0;r<height;r++)
     std::memcpy(row(r),src.row(r),src.cdx*src.width);
 }
 
-ImageStruct ImageStruct::roi(PixCoord r ,PixCoord c ,PixCoord w ,PixCoord h )const
+ImageBase ImageBase::roi(int r ,int c ,int w ,int h )const
 {
-  ImageStruct dst(*this);
+  ImageBase dst(*this);
   dst.width  = w;
   dst.height = h;
   dst.data  += index(r,c);
   return dst;
 }
 
-void ImageStruct::allocate(PixCoord length)
+void ImageBase::allocate(int length)
 {
   origin = data = new char[length];
   copycount  = new unsigned int(1);
   //cout<<"["<<(int*)origin<<"] "<<" Allocate "<<length<<endl;
 }
 
-void ImageStruct::release(void)
+void ImageBase::release(void)
 {
   if(copycount!=0){
     //cout<<"["<<(int*)origin<<"] "<<"Attemp to release "<<flush;
@@ -96,7 +96,7 @@ void ImageStruct::release(void)
 }
 
 
-bool ImCursor::moveX(PixCoord x)
+bool ImCursor::moveX(int x)
 {
   if (cc+x>=imgst.width || cc-x<0)
     return false;
@@ -105,7 +105,7 @@ bool ImCursor::moveX(PixCoord x)
   return true;
 }
 
-bool ImCursor::moveY(PixCoord y)
+bool ImCursor::moveY(int y)
 {
   if (cr+y>=imgst.height || cr-y<0)
     return false;
@@ -114,7 +114,7 @@ bool ImCursor::moveY(PixCoord y)
   return true;
 }
 
-bool ImCursor::moveXY(PixCoord x,PixCoord y)
+bool ImCursor::moveXY(int x,int y)
 {
   bool flag = false;
   flag |= cc+x>=imgst.width  || cc-x<0;
@@ -129,7 +129,7 @@ bool ImCursor::moveXY(PixCoord x,PixCoord y)
 
 bool ImCursor::moveNext(void)
 {
-  if (cc==(imgst.width-1) && cr==(imgst.height-1))
+  if (!imgst.test(cr,cc))
     return false;
   cptr+= imgst.cdx;
   cc  += 1;
@@ -289,7 +289,7 @@ ImFloat& ImFloat::operator/=(const ImFloat& c){OPERATION_FLT_TEMPLATE(ImOpFltDiv
 
 
 template<class Ts,class Td>
-ImageStruct ImConvertTemplate(const ImageStruct &src)
+ImageBase ImConvertTemplate(const ImageBase &src)
 {
   Image dst(src.width,src.height,src.channel,sizeof(Td));
   numeric_limits<Td> limits;
@@ -327,7 +327,7 @@ ImFloat imconvert2float(const Image& src)
   return dst;
 }
 
-Image imconvert(const ImFloat& src,PixType elen)
+Image imconvert(const ImFloat& src,int elen)
 {
   Image dst;
   switch(elen)
@@ -339,7 +339,7 @@ Image imconvert(const ImFloat& src,PixType elen)
   return dst;
 }
 
-Image imconvert(const Image& src,PixType elen)
+Image imconvert(const Image& src,int elen)
 {
   if (src.elength==elen)
     return src.clone();
@@ -455,7 +455,7 @@ bool imread(const char* filename, Image &image)
   return true;
 }
 
-void iminfo(ImageStruct &image)
+void iminfo(ImageBase &image)
 {
   cout<<" --------- Image Info --------- "<<endl;
   cout<<" data   : "<<(uint32_t*)image.data<<endl;
@@ -474,10 +474,10 @@ bool tImageInterp(const Image &image,float r,float c,void *dst)
 {
   if (image.test(r,c)==false)
     return false;
-  PixCoord fr = std::floor(r);
-  PixCoord fc = std::floor(c);
-  PixCoord cr = std::ceil(r);
-  PixCoord cc = std::ceil(c);
+  int fr = std::floor(r);
+  int fc = std::floor(c);
+  int cr = std::ceil(r);
+  int cc = std::ceil(c);
   float ar = r - std::floor(r);
   float ac = c - std::floor(c);
 
@@ -565,9 +565,9 @@ int main(void)
 
   ImFloat imjulia(640,480,3,sizeof(float));
   
-  for(PixCoord j=0;j<480;j++)
+  for(int j=0;j<480;j++)
   {
-    for(PixCoord i=0;i<640;i++)
+    for(int i=0;i<640;i++)
     {
       double a=0,b=0,c,d,n=0;
       while( (c=a*a)+(d=b*b)<4 && n++<880 )

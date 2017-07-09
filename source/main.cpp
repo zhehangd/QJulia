@@ -31,81 +31,64 @@ public:
   int height;
   int nthreads;
   
+  void start(void) {
+    
+    Image test(800,600,3,IMAGE_U8);
+    std::cout<<"start"<<std::endl;
+    ImCursor it(test,200,300,200,200);
+    std::cout<<"start2"<<std::endl;
+    for (int i=0; !it.eof(); i++) {
+      it.pixel<unsigned char>(0) = 3 * (i)    % 255;
+      it.pixel<unsigned char>(1) = 5 * (i+85) % 255;
+      it.pixel<unsigned char>(2) = 7 * (i+85) % 255;
+      it.moveNext();
+      std::cout<<i<<" "<<it.cr<<" "<<it.cc<<std::endl;
+    }
+    
+    imwrite(test,"test.ppm");
+    
+    
+  }
+  
 } *app;
 
-
-
-
-
-// An engine processes an image (buffer).
-class BasicEngine {
-public:
-  
-};
-
-class SurfaceEngine : BasicEngine {
-public:
-  int     nstep;
-  float   precs;
-  Vector4 coord;
-  
-};
-
-
-bool set_canvas(Console &console,std::vector<std::string> &argv) {
-  app->width  = 800;
-  app->height = 600;
-  return true;
-}
-
-bool set_camera(Console &console,std::vector<std::string> &argv) {
-  return true;
-}
-
-bool set_engine(Console &console,std::vector<std::string> &argv) {
-  return true;
-}
-
-bool set_system(Console &console,std::vector<std::string> &argv) {
-  app->nthreads = 4;
-  return true;
-}
-
-bool set_lights(Console &console,std::vector<std::string> &argv) {
-  return true;
-}
 
 
 int main(int argc,const char **argv) {
   
   
   app = new App();
-  
-  Console console;
-  console.ignore_unknown = true;
-  
-  console.addCommand("set_canvas",set_canvas);
-  console.addCommand("set_camera",set_camera);
-  console.addCommand("set_engine",set_engine);
-  console.addCommand("set_system",set_system);
-  console.addCommand("set_lights",set_lights);
-
-  
-  
-  if(argc==1)
-  {
-    std::cout<<"Please pass script files as arguments."<<std::endl;
-    return -1;
-  }
-  
-  for(int i=1;i<argc;i++)
-  {
-    if(std::string(argv[i])=="-e" && (i!=(argc-1)))
-      console.eval(argv[i+1]);
-    else
-      console.runfile(argv[i]);
-  }
+  app->start();
   
   return 0;
   
 }
+
+
+
+/*
+set_system nthreads 4
+set_system filename julia.ppm
+
+set_canvas size  800 600
+set_camera pose  4 3 2 0 0
+set_camera pose  60 30 4
+set_camera zoom  1.0
+
+set_engine precs 0.0001
+set_engine nstep 200
+set_engine depth 1 8
+set_engine coord -0.2 0.8 0.0 0.0
+
+set_lights add
+set_lights position 0 0 0
+set_lights ambient  0.1 0.1 0.1
+set_lights diffuse  0.1 0.1 0.1
+set_lights specular 0.1 0.1 0.1
+
+set_lights add
+set_lights position 0 0 0
+set_lights ambient  0.1 0.1 0.1
+set_lights diffuse  0.1 0.1 0.1
+set_lights specular 0.1 0.1 0.1
+*/ 
