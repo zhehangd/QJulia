@@ -4,6 +4,7 @@
 #include <memory>
 #include <thread>
 #include <complex>
+#include <cmath>
 
 #include "Console.hpp"
 #include "Utility.hpp"
@@ -67,11 +68,11 @@ public:
     
     int width   = 800;
     int height  = 600;
-    float cx    = 0.5f;
+    float cx    = 0.0f;
     float cy    = 0.0f;
     float focus = 0.004f;
     const int aa = 6;
-    std::complex<float> c(-.4f,.6f);
+    std::complex<float> c(-.835f,0);
     
     ImFloat* canvas = new ImFloat(width,height,3,IMAGE_F32);
     
@@ -105,9 +106,9 @@ public:
         dst[0] += cx;
         dst[1] += cy;
         std::complex<float> x(dst[0],dst[1]);
-
         int val = 0;
         for(val=0;val<255;val++) {
+          //x = (1+(n-1)*std::pow(x,n))/(n*std::pow(x,n-1));
           x = x*x + c;
           if (std::norm(x)>2.0f)
             break;
