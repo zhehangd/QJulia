@@ -21,8 +21,8 @@
 //                  one of them, y by default, is used as a reference.
 //                  y: [1,-1] -> [0,height] (reversed)
 //                  x: [-m,m] -> [0,width]
+//                  z: identity
 //                     m is selected to keep the aspect ratio.
-//                  z is not involved.
 // Methods:
 // projectXab:     projecting from system b to system a.
 // projectInvXsw:  projecting from a to b.
@@ -36,10 +36,13 @@ public:
         
     Camera(void);
     
-    // Set up extrinsic parameters with "LookAt" style.
+    // Set up the extrinsic parameters with "XY Canvas" style.
+    void setupExt(void);
+    
+    // Set up the extrinsic parameters with "LookAt" style.
     void setupExt(const float *src,const float *dst,const float *up);
     
-    // Set up extrinsic parameters with "LookAtOrigin" style.
+    // Set up the extrinsic parameters with "LookAtOrigin" style.
     void setupExt(float h,float v,float r);
     
     // Set up extrinsic parameters with "GunTurret" style.
@@ -94,32 +97,34 @@ protected:
 class CameraPersp : public Camera {
   
 public:
-        
     CameraPersp(void);
-    
-    // Setup intrinsic parameters.
     void setupInt(float focus,float zmax);
-
     void projectXpc(float *dst,float *src)const;
     void projectInvXpc(float *dst,float *src)const;
 
-    // Intrinsic Parameters
+private:
     float f;
     float fz; // -(zmax+f)/zmax.
     float zm; // zmax
-    
-    //
-
 };
 
 
 class CameraOrtho : public Camera {
-  // prospective feature
+  
+public:
+    CameraOrtho(void);
+    void setupInt(float focus,float zmax);
+    void projectXpc(float *dst,float *src)const;
+    void projectInvXpc(float *dst,float *src)const;
+
+private:
+    float f;
+    float zm; // zmax
 };
 
 
 class CameraStereo : public Camera {
-  // prospective feature
+
 };
 
 #endif

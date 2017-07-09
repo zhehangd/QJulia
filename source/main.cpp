@@ -67,7 +67,7 @@ public:
     
     int width   = 800;
     int height  = 600;
-    float cx    = 0.0f;
+    float cx    = 0.5f;
     float cy    = 0.0f;
     float focus = 0.004f;
     const int aa = 6;
@@ -85,20 +85,27 @@ public:
        .58f, -.55f, .104f,
       -.31f, -.71f, .106f,
     };
-
+    
+    CameraOrtho camera;
+    camera.setupInt(1,1);
+    camera.setupExt();
+    camera.setupScn(width,height);
     
 
     Image* aabuff = new Image(width,height,aa,IMAGE_U8);
     
     for (int k=0;k<aa;k++) {
       for (ImCursor scan(*aabuff); !scan.eof(); scan.moveNext()) {
-        std::complex<float> x(scan.cc,scan.cr);
-        x -= std::complex<float>(width,height) * 0.5f;
-        x += std::complex<float>(AAFilter[k][0],AAFilter[k][1]);
-        x *= focus;
-        x += std::complex<float>(cx,cy);
         
-        
+        float dst[3];
+        float src[3] = {(float)scan.cc,(float)scan.cr,0};
+        src[0] += AAFilter[k][0];
+        src[1] += AAFilter[k][1];
+        camera.projectInvXsw(dst,src);
+        dst[0] += cx;
+        dst[1] += cy;
+        std::complex<float> x(dst[0],dst[1]);
+
         int val = 0;
         for(val=0;val<255;val++) {
           x = x*x + c;

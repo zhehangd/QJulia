@@ -47,6 +47,14 @@ Camera::Camera(void) {
 
 }
 
+// Set up the extrinsic parameters with "XY Canvas" style.
+void Camera::setupExt(void) {
+  const float src[3] = {0, 0, 0};
+  const float dst[3] = {0, 0,-1};
+  const float up[3]  = {0, 1, 0};
+  setupExt(src,dst,up);
+}
+
 void Camera::setupExt(const float *src,const float *dst,const float *up)
 {
   float camz[3];
@@ -134,12 +142,14 @@ void Camera::projectXsp(float *dst,float *src)const
 {
   dst[0] =   src[0] * fs + hw;
   dst[1] = - src[1] * fs + hh;
+  dst[2] =   src[2];
 }
 
 void Camera::projectInvXsp(float *dst,float *src)const
 {
   dst[0] =   (src[0] - hw) / fs;
   dst[1] = - (src[1] - hh) / fs;
+  dst[2] =    src[2];
 }
 
 void Camera::projectXcw(float *dst,float *src)const
@@ -186,14 +196,15 @@ void Camera::projectInvXsc(float *dst,float *src)const
 
 
 
-
+// ====================================
 
 
 
 CameraPersp::CameraPersp(void) : Camera()
 {
-  f  = 1;
-  fz = 1;
+  f  = 1.0f;
+  fz = 1.0f;
+  zm = 1.0f;
 }
 
 void CameraPersp::setupInt(float focus,float zmax)
@@ -202,11 +213,6 @@ void CameraPersp::setupInt(float focus,float zmax)
   f  = focus;
   fz = (zmax+focus)/(zmax + 1e-6); 
 }
-
-
-
-
-
 
 void CameraPersp::projectXpc(float *dst,float *src)const
 {
@@ -224,3 +230,82 @@ void CameraPersp::projectInvXpc(float *dst,float *src)const
   dst[0] = src[0] * w / f;
   dst[1] = src[1] * w / f;
 }
+
+
+// ====================================
+
+
+
+CameraOrtho::CameraOrtho(void) : Camera()
+{
+  f  = 1.0f;
+  zm = 1.0f;
+}
+
+void CameraOrtho::setupInt(float focus,float zmax)
+{
+  zm = zmax;
+  f  = focus;
+}
+
+void CameraOrtho::projectXpc(float *dst,float *src)const
+{
+  dst[0]  = f  * src[0];
+  dst[1]  = f  * src[1];
+  dst[2]  = - src[2] / zm;
+}
+
+
+void CameraOrtho::projectInvXpc(float *dst,float *src)const
+{
+  dst[2] = - src[2] * zm;
+  dst[0] =   src[0] / f;
+  dst[1] =   src[1] / f;
+}
+
+
+#if 0
+
+#include <cstdio>
+
+int main(int argc,const char **argv) {
+
+  CameraOrtho camera;
+  camera.setupInt(1,1);
+  camera.setupExt();
+  camera.setupScn(800,600);
+  
+  float src[15][3] = {
+          {0,0,0},
+          {200,0,0},
+          {400,0,0},
+          {600,0,0},
+          {800,0,0},
+          {0,300,0},
+          {200,300,0},
+          {400,300,0},
+          {600,300,0},
+          {800,300,0},
+          {0,600,0},
+          {200,600,0},
+          {400,600,0},
+          {600,600,0},
+          {800,600,0},
+  };
+  for (int i=0;i<15;i++) {
+    float dst[3];
+    camera.projectInvXsw(dst,src[i]);
+    for (int j=0;j<3;j++)
+      std::printf("%6.2f,",src[i][j]);
+    std::printf("  -->  ");
+    for (int j=0;j<3;j++)
+      std::printf("%6.2f,",dst[j]);
+    std::printf("\n");
+  }
+  
+  return 0;
+  
+}
+
+
+#endif
